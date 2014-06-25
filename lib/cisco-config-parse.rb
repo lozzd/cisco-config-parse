@@ -45,7 +45,9 @@ class CiscoConfigParse
     def parse_config(line)
         cmd, opts = line.strip.split(' ', 2)
         meth, opts = meth_and_opts(cmd, opts)
-        send(meth, opts) if respond_to?(meth)
+		if !opts.nil?
+			send(meth, opts) if respond_to?(meth)
+		end
     end
     def meth_and_opts(cmd, opts)
         return negated_meth_and_opts(opts) if cmd =~ /no/
