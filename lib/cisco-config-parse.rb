@@ -37,20 +37,25 @@ class CiscoConfigParse
     def state
         @state ||= []
     end
+
     def end_config
         meth = ['e_config', state].flatten.join('_')
-        send(meth) if respond_to?(meth)
+        send(meth) if self.protected_methods.include?(meth.to_sym)
         state.pop
+
     end
+
     def parse_config(line)
         cmd, opts = line.strip.split(' ', 2)
         meth, opts = meth_and_opts(cmd, opts)
-        send(meth, opts) if respond_to?(meth)
+        send(meth, opts) if self.protected_methods.include?(meth.to_sym)
     end
+
     def meth_and_opts(cmd, opts)
         return negated_meth_and_opts(opts) if cmd =~ /no/
             [['p_config', state, cmd.gsub('-', '_')].flatten.join('_'), opts]
     end
+
     def negated_meth_and_opts(line)
         cmd, opts = line.split(' ', 2)
         [['n_config', state, cmd.gsub('-', '_')].flatten.join('_'), opts]
